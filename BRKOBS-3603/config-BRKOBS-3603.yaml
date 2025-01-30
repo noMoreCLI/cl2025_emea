@@ -1,0 +1,56 @@
+global: 
+  k8s:
+    appName: "BRKOBS-3603-demo"
+    imageNamePrefix: astoklas177/ 
+services:
+  service-a:
+    type: java
+    endpoints:
+      http:
+        /call-a:
+          - http://service-a/do-something
+        /call-b:
+          - http://service-b/do-something
+        /call-c:
+          - http://service-b/call-b
+        /do-something:
+          - slow,512
+          - call: error,500,Error on Service A
+            probability: 0.2        
+        /healthz:
+          - slow,1024
+  service-b:
+    type: java
+    endpoints:
+      http:
+        /call-b:
+          - http://service-c/do-something
+        /do-something:
+          - slow,512
+          - call: error,500,Error on Service A
+            probability: 0.2        
+        /healthz:
+          - slow,1024
+  service-c:
+    type: java   
+    endpoints:
+      http:
+        /do-something:
+          - slow,512
+          - call: error,500,Error on Service A
+            probability: 0.2        
+        /healthz:
+          - slow,1024
+loaders:
+  browser:
+    type: curl
+    wait: 15
+    sleep: 1
+    count: 5
+    urls:
+      - http://service-a/call-a
+      - http://service-a/call-b
+      - http://service-a/call-c
+      - http://service-a/healthz
+      - http://service-b/healthz
+      - http://service-c/healthz

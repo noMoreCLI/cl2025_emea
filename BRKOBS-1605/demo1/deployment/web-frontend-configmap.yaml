@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  config.json: "{\"appName\": \"DemoApp\", \"imageNamePrefix\": \"astoklas177/\",\
+    \ \"imageVersion\": \"v0.0.2\", \"type\": \"java\", \"endpoints\": {\"http\":\
+    \ {\"/login\": [\"http://account/account/login\"], \"/homepage\": [\"http://account/account/home\"\
+    , \"cache,128\"], \"/homepage/search\": [\"http://inventory/search\"], \"/homepage/searchitem\"\
+    : [\"http://inventory/search/item/1\", \"http://inventory/search/item/100\"\
+    , {\"call\": \"error,403,\\\"Item not found in index\\\"\", \"probability\": 0.1}],\
+    \ \"/logout\": [\"http://account/account/logout\"], \"/healthz\": [\"slow,128\"\
+    ]}}, \"agent\": false, \"serviceName\": \"web-frontend\"}  \n"
+kind: ConfigMap
+metadata:
+  name: web-frontend-json

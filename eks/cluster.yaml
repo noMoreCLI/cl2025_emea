@@ -1,0 +1,27 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: CiscoLive2025
+  region: eu-central-1 
+  version: "1.31"
+
+managedNodeGroups:
+- name: nodegroupsmall
+  desiredCapacity: 0
+  instanceType: t3.small
+  ssh:
+    enableSsm: true
+- name: nodegroupmedium
+  desiredCapacity: 3
+  instanceType: t3.medium
+  ssh:
+    enableSsm: true
+
+# To enable all of the control plane logs, uncomment below:
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+
+

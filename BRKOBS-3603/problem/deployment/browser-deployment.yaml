@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: BRKOPS-3603-demo
+    service: browser
+  name: browser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: BRKOPS-3603-demo
+      service: browser
+  template:
+    metadata:
+      labels:
+        app: BRKOPS-3603-demo
+        service: browser
+    spec:
+      containers:
+      - env:
+        - name: URLS
+          value: http://service-a/call-a http://service-a/call-b http://service-a/call-c
+            http://service-a/healthz http://service-b/healthz http://service-c/healthz
+        - name: WAIT
+          value: '15'
+        - name: SLEEP
+          value: '1'
+        image: astoklas177/app-simulator-loaders-curl:v0.0.2
+        imagePullPolicy: Always
+        name: loader-container
+        resources: {}

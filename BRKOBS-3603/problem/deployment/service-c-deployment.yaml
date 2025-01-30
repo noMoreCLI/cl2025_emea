@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: BRKOPS-3603-demo
+    service: service-c
+  name: service-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: BRKOPS-3603-demo
+      service: service-c
+  template:
+    metadata:
+      labels:
+        app: BRKOPS-3603-demo
+        service: service-c
+    spec:
+      containers:
+      - env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: SERVICE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels['service']
+        image: astoklas177/app-simulator-services-java:v0.0.2
+        imagePullPolicy: Always
+        name: app-container
+        ports:
+        - containerPort: 8080
+        resources: {}
+        volumeMounts:
+        - mountPath: /config.json
+          name: config-json
+          subPath: config.json
+      volumes:
+      - configMap:
+          name: service-c-json
+        name: config-json

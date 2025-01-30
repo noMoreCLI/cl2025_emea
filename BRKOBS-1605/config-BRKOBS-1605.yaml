@@ -1,0 +1,89 @@
+global:
+  appName: "BRKOBS-1605"
+  imageNamePrefix: astoklas177/  
+  k8s:
+    appName: "DemoApp"
+    imageNamePrefix: astoklas177/  
+    imageVersion: v0.0.2
+services:
+  web-frontend:
+    type: java
+    endpoints:
+      http:
+        /login:
+          - http://account/account/login
+        /homepage:
+          - http://account/account/home
+          - cache,128
+        /homepage/search:
+          - http://inventory/search
+        /homepage/searchitem:
+          - http://inventory/search/item/1
+          - http://inventory/search/item/1
+          - http://inventory/search/item/1
+          - http://inventory/search/item/1
+          - http://inventory/search/item/100
+          - call: error,403,"Item not found in index"
+            probability: 0.1          
+        /logout:
+          - http://account/account/logout     
+        /healthz:
+          - slow,128
+  account:
+    type: java
+    endpoints:
+      http:
+        /account/login:
+          - sql://sessiondb/policy?query=INSERT INTO sessions(user,data) VALUES('user1',123)
+          - sql://sessiondb/policy?query=INSERT INTO sessions(user,data) VALUES('user2',987)          
+        /account/home:
+          - slow,524
+          - call: error,500,Oops
+            probability: 0.3
+        /account/logout:
+          - sql://sessiondb/session?query=INSERT INTO audit(user,audittrail) VALUES('user1',1)
+          - sql://sessiondb/session?query=INSERT INTO audit(user,audittrail) VALUES('user2',0)
+        /healthz:
+          - slow,128
+  inventory:
+    type: java
+    endpoints:
+      http:
+        /search:
+          - http://api/inventory
+        /search/item/1:
+          - slow,128
+        /search/item/100:
+          - slow,4096
+  api:
+    type: java    
+    endpoints:
+      http:
+        /inventory:
+          - slow,323
+          - call: error,500,"Not found in inventory"
+            probability: 0.3
+        /healthz:
+          - slow,128
+loaders:
+  browser:
+    type: curl
+    wait: 15
+    sleep: 1
+    count: 5
+    urls:
+      - http://web-frontend/login
+      - http://web-frontend/homepage
+      - http://web-frontend/homepage/search
+      - http://web-frontend/homepage/searchitem
+      - http://web-frontend/homepage/searchitem
+      - http://web-frontend/homepage/searchitem
+      - http://web-frontend/logout
+databases:
+  sessiondb:
+    type: mysql
+    imageVersion: v0.0.3
+    databases:
+      session:
+        sessions: [id, user, data]
+        audit: [id, user, audittrail]

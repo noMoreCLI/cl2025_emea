@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: DemoApp
+    service: browser
+  name: browser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: DemoApp
+      service: browser
+  template:
+    metadata:
+      labels:
+        app: DemoApp
+        service: browser
+    spec:
+      containers:
+      - env:
+        - name: URLS
+          value: http://web-frontend/login http://web-frontend/homepage http://web-frontend/homepage/search
+            http://web-frontend/homepage/searchitem http://web-frontend/homepage/searchitem
+            http://web-frontend/homepage/searchitem http://web-frontend/logout
+        - name: WAIT
+          value: '15'
+        - name: SLEEP
+          value: '1'
+        image: astoklas177/app-simulator-loaders-curl:v0.0.2
+        imagePullPolicy: Always
+        name: loader-container
+        resources: {}

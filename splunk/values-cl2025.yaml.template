@@ -1,0 +1,29 @@
+agent:
+  discovery:
+    enabled: true
+certmanager:
+  enabled: true
+clusterName: CiscoLive2025
+environment: CiscoLive2025
+cloudProvider: aws
+distribution: eks
+gateway:
+  enabled: false
+operator:
+  enabled: true
+instrumentation:
+  env:
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment=$(NAMESPACE),service.namespace=$(NAMESPACE)"
+  java:
+    env:
+      - name: OTEL_RESOURCE_ATTRIBUTES
+        value: "deployment.environment=$(NAMESPACE),service.namespace=$(NAMESPACE)"
+  nodejs:
+    env:
+      - name: OTEL_RESOURCE_ATTRIBUTES
+        value: "deployment.environment=$(NAMESPACE),service.namespace=$(NAMESPACE)"
+splunkObservability:
+  accessToken: <access token>
+  profilingEnabled: true
+  realm: <realm>

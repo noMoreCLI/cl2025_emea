@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  config.json: "{\"type\": \"curl\", \"wait\": 15, \"sleep\": 1, \"count\": 5, \"\
+    urls\": [\"http://web-frontend/login\", \"http://web-frontend/homepage\", \"http://web-frontend/homepage/search\"\
+    , \"http://web-frontend/homepage/searchitem\", \"http://web-frontend/homepage/searchitem\"\
+    , \"http://web-frontend/homepage/searchitem\", \"http://web-frontend/logout\"\
+    ], \"serviceName\": \"browser\"}  \n"
+kind: ConfigMap
+metadata:
+  name: browser-json

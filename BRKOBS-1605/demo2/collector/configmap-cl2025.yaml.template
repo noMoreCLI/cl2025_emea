@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+data:
+  config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: ${env:POD_IP}:4317
+          http:
+            endpoint: ${env:POD_IP}:4318
+            cors:
+              allowed_origins:
+                - http://*
+                - https://*
+    processors:
+      transform:
+        trace_statements:
+          - context: span
+            conditions:
+              - kind == SPAN_KIND_SERVER
+            statements:
+              - set(name, attributes["url.path"])
+              - replace_pattern(name, "\\?.*$", "?{queryparams}")
+          - context: span
+            conditions:
+              - kind == SPAN_KIND_CLIENT
+            statements:
+              - set(attributes["exit-point-type"],"HTTP") where attributes["http.request.method"] == "GET"
+              - set(attributes["http.method"], attributes["http.request.method"]) where attributes["http.request.method"] == "GET"
+              - set(attributes["http.url"],attributes["url.full"]) where attributes["http.request.method"] == "GET"
+              - replace_pattern(attributes["http.url"], "^http://", "/") where attributes["http.request.method"] == "GET"
+              - set(attributes["net.peer.name"],attributes["server.address"]) where attributes["db.name"] == "session"
+              - set(attributes["net.peer.port"],attributes["server.port"]) where attributes["db.name"] == "session"
+      resource:
+        attributes:
+        - key: appdynamics.controller.account
+          action: upsert
+          value: <account>
+        - key: appdynamics.controller.host
+          action: upsert
+          value: <controller host>
+        - key: appdynamics.controller.port
+          action: upsert
+          value: 443
+        - key: service.name
+          value: unknown-service
+          action: insert
+        - key: service.namespace
+          value: unknown_app
+          action: insert
+      batch:
+        timeout: 30s
+        send_batch_size: 90
+
+    exporters:
+      debug:
+        verbosity: detailed
+        sampling_initial: 5
+        sampling_thereafter: 200
+      debug/full:
+        verbosity: detailed
+      otlp:
+        endpoint: "splunk-otel-collector-agent.splunk.svc.cluster.local:4317"
+        tls:
+          insecure: true  # Set to true if the endpoint doesn't use TLS; otherwise, configure TLS settings appropriately
+      otlphttp:
+        endpoint: <OTIS ENDPOINT>
+        headers: {"x-api-key": "<API KEY>"}
+    extensions:
+      zpages:
+        endpoint: ${env:POD_IP}:56888
+
+    service:
+      extensions: [zpages]
+      pipelines:
+        traces/fso:
+          receivers: [otlp]
+          processors: [transform, resource, batch]
+          exporters: [otlphttp, otlp]      
+        metrics:
+          receivers: [otlp]
+          processors: [transform, resource, batch]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]        

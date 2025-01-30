@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: DemoApp
+    service: sessiondb
+  name: sessiondb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: DemoApp
+      service: sessiondb
+  template:
+    metadata:
+      labels:
+        app: DemoApp
+        service: sessiondb
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        image: astoklas177/app-simulator-databases-mysql:v0.0.3
+        imagePullPolicy: Always
+        name: db-container
+        ports:
+        - containerPort: 3306
+        resources: {}
+        volumeMounts:
+        - mountPath: /config.json
+          name: config-json
+          subPath: config.json
+      volumes:
+      - configMap:
+          name: sessiondb-json
+        name: config-json

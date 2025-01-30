@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  config.json: "{\"appName\": \"DemoApp\", \"imageNamePrefix\": \"astoklas177/\",\
+    \ \"imageVersion\": \"v0.0.2\", \"type\": \"java\", \"endpoints\": {\"http\":\
+    \ {\"/inventory\": [\"slow,323\", {\"call\": \"error,500,\\\"Not found in inventory\\\
+    \"\", \"probability\": 0.3}], \"/healthz\": [\"slow,128\"]}}, \"agent\": false,\
+    \ \"serviceName\": \"api\"}  \n"
+kind: ConfigMap
+metadata:
+  name: api-json

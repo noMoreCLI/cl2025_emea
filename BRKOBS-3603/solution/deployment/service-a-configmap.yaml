@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  config.json: "{\"appName\": \"BRKOPS-3603-demo\", \"imageNamePrefix\": \"astoklas177/\"\
+    , \"type\": \"java\", \"endpoints\": {\"http\": {\"/call-a\": [\"http://service-a/do-something\"\
+    ], \"/call-b\": [\"http://service-b/do-something\"], \"/call-c\": [\"http://service-b/call-b\"\
+    ], \"/do-something\": [\"slow,512\", {\"call\": \"error,500,Error on Service A\"\
+    , \"probability\": 0.2}], \"/healthz\": [\"slow,1024\"]}}, \"agent\": false, \"\
+    serviceName\": \"service-a\"}  \n"
+kind: ConfigMap
+metadata:
+  name: service-a-json

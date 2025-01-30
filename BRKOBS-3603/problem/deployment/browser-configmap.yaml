@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  config.json: "{\"type\": \"curl\", \"wait\": 15, \"sleep\": 1, \"count\": 5, \"\
+    urls\": [\"http://service-a/call-a\", \"http://service-a/call-b\", \"http://service-a/call-c\"\
+    , \"http://service-a/healthz\", \"http://service-b/healthz\", \"http://service-c/healthz\"\
+    ], \"serviceName\": \"browser\"}  \n"
+kind: ConfigMap
+metadata:
+  name: browser-json

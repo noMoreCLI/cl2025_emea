@@ -1,0 +1,76 @@
+clusterAgent:
+  logProperties:
+    logFileBackups: 3
+    logFileSizeMb: 5
+    logLevel: DEBUG
+  nsToMonitor:
+    - petclinic-appd
+    - brkobs-3603-s
+    - brkobs-3603-p
+    - brkobs-1605-demo1
+    - brkobs-1605-nootel
+controllerInfo:
+  accessKey: <accessKey>
+  account: <account>
+  globalAccount: <globalAccount>
+  url: <controllerURL>
+infraViz:
+  enableContainerHostId: true
+  enableDockerViz: false
+  enableMasters: false
+  enableServerViz: true
+  stdoutLogging: false
+install:
+  metrics-server: false
+installClusterAgent: true
+installInfraViz: true
+instrumentationConfig:
+  enableForceReInstrumentation: true
+  numberOfTaskWorkers: 4
+  appNameStrategy: namespace
+  defaultAppName: DefaultApplication
+  resourcesToInstrument:
+  - Deployment
+  - StatfulSet
+  defaultCustomConfig: ""
+  enabled: true
+  imageInfo:
+    java:
+      agentMountPath: /opt/appdynamics
+      image: docker.io/appdynamics/java-agent:24.10.0.36431
+      imagePullPolicy: Always
+    nodejs:
+      agentMountPath: /opt/appdynamics
+      image: docker.io/appdynamics/nodejs-agent:24.10.0-18-alma
+      imagePullPolicy: Always
+    dotnetcore:
+      agentMountPath: /opt/appdynamics
+      image: docker.io/appdynamics/dotnet-core-agent:latest
+      imagePullPolicy: Always
+  instrumentationMethod: Env
+  instrumentationRules:
+  - appName: BRKOBS-3603-p
+    language: java
+    namespaceRegex: brkobs-3603-p
+    matchString: ^service-a|^service-c
+    tierNameLabel: service
+  - appName: BRKOBS-3603-s
+    language: java
+    namespaceRegex: brkobs-3603-s
+    matchString: ^service-a|^service-c
+    tierNameLabel: service
+    customAgentConfig: -Dappdynamics.low.entropy=true -Dappdynamics.opentelemetry.enabled=true -Dotel.traces.exporter=otlp -Dotel.resource.attributes=service.name=$(SERVICE_NAME),service.namespace=$(NAMESPACE),k8s.namespace.name=$(NAMESPACE),deployment.environment=$(NAMESPACE),k8s.cluster.name=$(K8S_CLUSTER_NAME) -Dotel.exporter.otlp.endpoint=http://otel-collector:4317
+  - appName: BRKOBS-1605-demo1
+    language: java
+    namespaceRegex: brkobs-1605-demo1
+    matchString: ^web-frontend|^account|^api
+    tierNameLabel: service
+    customAgentConfig: -Dappdynamics.low.entropy=true -Dappdynamics.opentelemetry.enabled=true -Dotel.traces.exporter=otlp -Dotel.resource.attributes=service.name=$(SERVICE_NAME),service.namespace=$(NAMESPACE),k8s.namespace.name=$(NAMESPACE),deployment.environment=$(NAMESPACE),k8s.cluster.name=$(K8S_CLUSTER_NAME) -Dotel.exporter.otlp.endpoint=http://otel-collector:4317
+  - appName: BRKOBS-1605-noOtel
+    language: java
+    namespaceRegex: brkobs-1605-nootel
+    matchString: ^web-frontend|^account|^api
+    tierNameLabel: service
+  nsToInstrumentRegex: petclinic-appd|brkobs-3603-p|brkobs-3603-s|brkobs-1605-demo1|brkobs-1605-nootel
+  tierNameLabel: tierName
+  tierNameStrategy: label

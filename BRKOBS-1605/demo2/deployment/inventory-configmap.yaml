@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  config.json: "{\"appName\": \"DemoApp\", \"imageNamePrefix\": \"astoklas177/\",\
+    \ \"imageVersion\": \"v0.0.2\", \"type\": \"java\", \"endpoints\": {\"http\":\
+    \ {\"/search\": [\"http://api/inventory\"], \"/search/item/1\": [\"sleep,128\"\
+    ], \"/search/item/100\": [\"sleep,2048\"]}}, \"agent\": false, \"serviceName\"\
+    : \"inventory\"}  \n"
+kind: ConfigMap
+metadata:
+  name: inventory-json
