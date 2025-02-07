@@ -6,7 +6,7 @@ Welcome to the repository dedicated to recreating the environment used during Ci
 
 This repository contains all the necessary deployment files and templates to set up and run the demo applications showcased during the sessions. Our aim is to provide you with a seamless experience in replicating the environment.
 
-## Preequisites
+## Prerequisites
 
 - AppDynamcis Controller
 - Splunk Observability Cloud
